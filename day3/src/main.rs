@@ -6,7 +6,11 @@
 // if odd arr[1,2,3] => [0,(len-1)/2) [(len-1)/2,len-1)
 // 3. find same char give the priority
 
-use std::{collections::HashMap, fs::File, io::BufReader};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    io::BufReader,
+};
 
 fn main() -> Result<(), std::io::Error> {
     // Table Method
@@ -52,7 +56,6 @@ fn main() -> Result<(), std::io::Error> {
             let mut visit = false;
             f.chars().into_iter().for_each(|c| {
                 if s.contains(c) && !visit {
-                    println!("{:?}", c);
                     sum += priority_map[&c];
                     visit = true;
                 }
@@ -60,5 +63,28 @@ fn main() -> Result<(), std::io::Error> {
         });
     // println!("{:?}", m.collect::Vec<String>());
     println!("Part 1:{:?}", sum);
+
+    let mut sum_part2 = 0;
+    let v: Vec<&str> = include_str!("../input").lines().collect();
+    v.chunks(3).into_iter().for_each(|cs| {
+        sum_part2 += prioritys(cs[0], cs[1], cs[2])
+            .into_iter()
+            .fold(0, |acc, x| acc + priority_map[&x]);
+    });
+    println!("Part 2:{:?}", sum_part2);
     Ok(())
+}
+
+fn prioritys(first: &str, second: &str, third: &str) -> Vec<char> {
+    let f: HashSet<_> = first.chars().into_iter().collect();
+    let s: HashSet<_> = second.chars().into_iter().collect();
+    let t: HashSet<_> = third.chars().into_iter().collect();
+    //f s intersection
+    let mut res: Vec<char> = Vec::new();
+    f.intersection(&s).for_each(|x| {
+        if t.contains(x) {
+            res.push(x.clone());
+        }
+    });
+    res
 }
